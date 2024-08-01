@@ -4,7 +4,10 @@ use clap::Parser;
 #[derive(Parser)]
 // struct becomes command line definition
 // allows to use `cargo run -- --help` as a default
+// description and default value can be added
 struct Options {
+    #[clap(default_value = "Meow!")]
+    /// What does the cat say?
     message: String,
 }
 
