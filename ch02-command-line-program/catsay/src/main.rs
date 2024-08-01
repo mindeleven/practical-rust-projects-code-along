@@ -9,14 +9,24 @@ struct Options {
     #[clap(default_value = "Meow!")]
     /// What does the cat say?
     message: String,
+    #[clap(short = 'd', long = "dead")]
+    /// Make the cat appear dead
+    dead: bool,
 }
 
 fn print_msg_from_clap() {
     // print message using clap
     // returns a struct populated with parsed argument values
-    let args = Options::parse();
+    let options = Options::parse();
 
-    println!("{}", args.message);
+    let eye = if options.dead { "x" } else { "o" };
+
+    println!("{}", options.message);
+    println!(" \\");
+    println!("  \\");
+    println!("     /\\_/\\");
+    println!("    ( {} {} )", eye, eye);
+    println!("    =( I )=");
 }
 
 fn main() {
