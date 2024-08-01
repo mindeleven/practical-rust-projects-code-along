@@ -1,5 +1,8 @@
 // crate clap docs @ https://docs.rs/clap/latest/clap/
 use clap::Parser;
+// crate colored @ https://docs.rs/colored/latest/colored/
+// colorized trait is implemented on &str and Str
+use colored::Colorize;
 
 #[derive(Parser)]
 // struct becomes command line definition
@@ -31,8 +34,9 @@ fn print_msg_from_clap() {
     // cat stout.txt // cat stderr.txt
 
     let eye = if options.dead { "x" } else { "o" };
-
-    println!("{}", message);
+    
+    // colored trait for String
+    println!("{}", message.bright_yellow().underline().on_purple());
     println!(" \\");
     println!("  \\");
     println!("     /\\_/\\");
