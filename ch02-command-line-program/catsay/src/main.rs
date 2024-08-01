@@ -19,9 +19,20 @@ fn print_msg_from_clap() {
     // returns a struct populated with parsed argument values
     let options = Options::parse();
 
+    let message = options.message;
+
+    if message.to_lowercase() == "woof" {
+        // Rust's STDERR equivalent of println!
+        eprintln!("A cat shouldn't bark like a dog");
+    }
+
+    // saving STDOUT and STDERR to textfiles with
+    // cargo run "woof" 1> stout.txt 2> stderr.txt
+    // cat stout.txt // cat stderr.txt
+
     let eye = if options.dead { "x" } else { "o" };
 
-    println!("{}", options.message);
+    println!("{}", message);
     println!(" \\");
     println!("  \\");
     println!("     /\\_/\\");
