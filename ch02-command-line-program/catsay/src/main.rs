@@ -1,5 +1,31 @@
+// crate clap docs @ https://docs.rs/clap/latest/clap/
+use clap::Parser;
 
-fn print_msg_from_std_env() {
+#[derive(Parser)]
+// struct becomes command line definition
+// allows to use `cargo run -- --help` as a default
+struct Options {
+    message: String,
+}
+
+fn print_msg_from_clap() {
+    // print message using clap
+    // returns a struct populated with parsed argument values
+    let args = Options::parse();
+
+    println!("{}", args.message);
+}
+
+fn main() {
+    
+    // print message from std::env::args()
+    // _print_msg_from_std_env();
+
+    // print message using clap
+    print_msg_from_clap();
+}
+
+fn _print_msg_from_std_env() {
     // getting an iterator of command line arguments
     // zeroth name (nth(0)) is name of binary itself
     // so lets read arguments beginning with nth(1)
@@ -12,10 +38,4 @@ fn print_msg_from_std_env() {
     println!("     /\\_/\\");
     println!("    ( o o )");
     println!("    =( I )=");
-}
-
-fn main() {
-    
-    print_msg_from_std_env();
-
 }
