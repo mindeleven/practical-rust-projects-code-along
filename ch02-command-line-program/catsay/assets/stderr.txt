@@ -1,4 +1,4 @@
    Compiling catsay v0.1.0 (/Users/juergenkober/Projects/Rust/_github-repos/practical-rust-projects/ch02-command-line-program/catsay)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.27s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.70s
      Running `target/debug/catsay woof`
 A cat shouldn't bark like a dog
