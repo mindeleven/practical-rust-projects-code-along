@@ -15,6 +15,10 @@ struct Options {
     #[clap(short = 'd', long = "dead")]
     /// Make the cat appear dead
     dead: bool,
+    // cat_file is optional and therefore wrapped into an Option
+    #[clap(short = 'f', long = "file")]
+    /// Load the cat picture from the specified file
+    cat_file: Option<std::path::PathBuf>,
 }
 
 fn print_msg_from_clap() {
@@ -30,8 +34,8 @@ fn print_msg_from_clap() {
     }
 
     // saving STDOUT and STDERR to textfiles with
-    // cargo run "woof" 1> stout.txt 2> stderr.txt
-    // cat stout.txt // cat stderr.txt
+    // cargo run "woof" 1> assets/stout.txt 2> assets/stderr.txt
+    // cat assets/stout.txt // cat assets/stderr.txt
 
     let eye = if options.dead { "x" } else { "o" };
     
@@ -44,13 +48,40 @@ fn print_msg_from_clap() {
     println!("    =( I )=");
 }
 
+fn print_cat_from_file() {
+    let options = Options::parse();
+    let message = options.message;
+    let eye = if options.dead { "x" } else { "o" };
+
+    match &options.cat_file {
+        Some(path) => {
+            let cat_template = std::fs::read_to_string(path)
+                .expect(&format!("Could not read file {:?}", path));
+            
+            let eye = format!("{}", eye.red().bold());
+
+            let cat_picture = cat_template.replace("{eye}", &eye);
+
+            println!("{}", message.bright_yellow().underline().on_purple());
+
+            println!("{}", &cat_picture);
+        },
+        None => {
+            print_msg_from_clap();
+        }
+    }
+}
+
 fn main() {
     
     // print message from std::env::args()
     // _print_msg_from_std_env();
 
     // print message using clap
-    print_msg_from_clap();
+    // print_msg_from_clap();
+
+    // use clap to print message and cat from file
+    print_cat_from_file()
 }
 
 fn _print_msg_from_std_env() {
