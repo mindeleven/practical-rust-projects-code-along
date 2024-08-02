@@ -48,15 +48,17 @@ fn print_msg_from_clap() {
     println!("    =( I )=");
 }
 
-fn print_cat_from_file() {
+fn print_cat_from_file() -> Result<(), Box<dyn std::error::Error>> {
     let options = Options::parse();
     let message = options.message;
     let eye = if options.dead { "x" } else { "o" };
 
     match &options.cat_file {
         Some(path) => {
-            let cat_template = std::fs::read_to_string(path)
-                .expect(&format!("Could not read file {:?}", path));
+            // let cat_template = std::fs::read_to_string(path)
+            //     .expect(&format!("Could not read file {:?}", path));
+            // using the ? operator instead
+            let cat_template = std::fs::read_to_string(path)?;
             
             let eye = format!("{}", eye.red().bold());
 
@@ -70,9 +72,11 @@ fn print_cat_from_file() {
             print_msg_from_clap();
         }
     }
+
+    Ok(())
 }
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     // print message from std::env::args()
     // _print_msg_from_std_env();
