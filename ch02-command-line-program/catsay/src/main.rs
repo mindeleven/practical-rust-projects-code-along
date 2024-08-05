@@ -4,6 +4,7 @@ use clap::Parser;
 // colorized trait is implemented on &str and Str
 use colored::Colorize;
 use std::io::{ self, Read };
+use std::path::PathBuf;
 
 #[derive(Parser)]
 // struct becomes command line definition
@@ -54,30 +55,12 @@ fn print_msg_from_clap() {
 }
 
 // cargo run -- -f assets/catfile.txt
-fn print_cat_from_file() -> Result<(), Box<dyn std::error::Error>> {
+fn _print_cat_from_file() -> Result<(), Box<dyn std::error::Error>> {
     let options = Options::parse();
     let message = options.message;
     let eye = if options.dead { "x" } else { "o" };
 
-    match &options.cat_file {
-        Some(path) => {
-            // let cat_template = std::fs::read_to_string(path)
-            //     .expect(&format!("Could not read file {:?}", path));
-            // using the ? operator instead
-            let cat_template = std::fs::read_to_string(path)?;
-            
-            let eye = format!("{}", eye.red().bold());
-
-            let cat_picture = cat_template.replace("{eye}", &eye);
-
-            println!("{}", message.bright_yellow().underline().on_purple());
-
-            println!("{}", &cat_picture);
-        },
-        None => {
-            print_msg_from_clap();
-        }
-    }
+    match_cat_file(&options.cat_file, eye, message);
 
     Ok(())
 }
@@ -99,12 +82,17 @@ fn read_msg_from_stdin() -> Result<(), Box<dyn std::error::Error>> {
 
     let eye = if options.dead { "x" } else { "o" };
 
-    match &options.cat_file {
+    match_cat_file(&options.cat_file, eye, message);
+
+    Ok(())
+}
+
+fn match_cat_file(cat_file: &Option<PathBuf>, eye: &str, message: String) {
+
+    match cat_file {
         Some(path) => {
-            // let cat_template = std::fs::read_to_string(path)
-            //     .expect(&format!("Could not read file {:?}", path));
-            // using the ? operator instead
-            let cat_template = std::fs::read_to_string(path)?;
+            let cat_template = std::fs::read_to_string(path)
+                .expect(&format!("Could not read file {:?}", path));
             
             let eye = format!("{}", eye.red().bold());
 
@@ -118,8 +106,6 @@ fn read_msg_from_stdin() -> Result<(), Box<dyn std::error::Error>> {
             print_msg_from_clap();
         }
     }
-
-    Ok(())
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
