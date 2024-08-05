@@ -3,6 +3,7 @@ use clap::Parser;
 // crate colored @ https://docs.rs/colored/latest/colored/
 // colorized trait is implemented on &str and Str
 use colored::Colorize;
+use std::io::{ self, Read };
 
 #[derive(Parser)]
 // struct becomes command line definition
@@ -19,6 +20,10 @@ struct Options {
     #[clap(short = 'f', long = "file")]
     /// Load the cat picture from the specified file
     cat_file: Option<std::path::PathBuf>,
+    // taking input from STDIN
+    #[clap(short = 'i', long = "stdin")]
+    /// Read the message from STDIN instead of the argument
+    stdin: bool,
 }
 
 fn print_msg_from_clap() {
@@ -48,9 +53,50 @@ fn print_msg_from_clap() {
     println!("    =( I )=");
 }
 
+// cargo run -- -f assets/catfile.txt
 fn print_cat_from_file() -> Result<(), Box<dyn std::error::Error>> {
     let options = Options::parse();
     let message = options.message;
+    let eye = if options.dead { "x" } else { "o" };
+
+    match &options.cat_file {
+        Some(path) => {
+            // let cat_template = std::fs::read_to_string(path)
+            //     .expect(&format!("Could not read file {:?}", path));
+            // using the ? operator instead
+            let cat_template = std::fs::read_to_string(path)?;
+            
+            let eye = format!("{}", eye.red().bold());
+
+            let cat_picture = cat_template.replace("{eye}", &eye);
+
+            println!("{}", message.bright_yellow().underline().on_purple());
+
+            println!("{}", &cat_picture);
+        },
+        None => {
+            print_msg_from_clap();
+        }
+    }
+
+    Ok(())
+}
+
+// function to pipe the output from echo into catsay
+// `echo -n "Hello World" | cargo run -- --stdin`
+// echo -n "Hello World" | cargo run -- -i -f assets/catfile.txt
+// echo -n "Hello World, I'm a dead cat" | cargo run -- -i -f assets/catfile.txt -d
+fn read_msg_from_stdin() -> Result<(), Box<dyn std::error::Error>> {
+    let options = Options::parse();
+    
+    let mut message = String::new();
+    if options.stdin {
+        // read from STDIN and storing message
+        io::stdin().read_to_string(&mut message)?;
+    } else {
+        message = options.message;
+    }
+
     let eye = if options.dead { "x" } else { "o" };
 
     match &options.cat_file {
@@ -85,7 +131,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // print_msg_from_clap();
 
     // use clap to print message and cat from file
-    print_cat_from_file()
+    // print_cat_from_file();
+
+    // read message from stdin
+    read_msg_from_stdin()
 }
 
 fn _print_msg_from_std_env() {
