@@ -7,6 +7,8 @@ use std::process::Command; // run programs
 // Finding your crate’s binary to test
 // Assert on the result of your program’s run.
 use assert_cmd::prelude::*; // add methods on commands, traits that extend Command
+// predicates allows to check STDOUT and see if it contains the expected output
+use predicates::prelude::*;
 
 #[test]
 fn run_with_defaults() {
@@ -14,5 +16,18 @@ fn run_with_defaults() {
     Command::cargo_bin("catsay") // takes cargo build binary name
         .expect("binary exits")
         .assert() // if binary, produce assert struct 
-        .success(); // very basic assertion
+        .success()// very basic assertion if we stop here
+        .stdout(predicate::str::contains("Meow!")); // verifying default STDOUT
+}
+
+#[test]
+fn fail_on_non_existing_file() -> Result<(), Box<dyn std::error::Error>> {
+    // example: checking if an invalid -f argument is handled correctly
+    Command::cargo_bin("catsay") // takes cargo build binary name
+        .expect("binary exits")
+        .args(&["-f", "no/such/file.txt"]) // expected to exit with error 
+        // .args(&["-f", "assets/catfile.txt"]) // file exits -> test fails 
+        .assert()
+        .failure(); // check if it actually fails
+    Ok(())
 }
