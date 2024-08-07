@@ -17,6 +17,7 @@ struct CatsayOptions<'a> {
     dead: bool
 }
 
+// setting up form layout and callbacks
 fn input_step(siv: &mut Cursive) {
     siv.add_layer(
         Dialog::new()
@@ -29,7 +30,7 @@ fn input_step(siv: &mut Cursive) {
                 )
                 .child(
                     "Dead?:", 
-                    EditView::new().with_name("dead")
+                    Checkbox::new().with_name("dead")
                 )
             )
             .button("OK", |s| {
@@ -59,7 +60,7 @@ fn result_steps(siv: &mut Cursive, options: &CatsayOptions) {
  \\
   \\
      /\\_/\\
-( {eye} {eye} )
+    ( {eye} {eye} )
     =( I )=",
         msg = options.message,
         eye = eye
@@ -79,7 +80,7 @@ fn main() {
     let mut siv = cursive::default();
     
     // calling input_step
-    input_step(&mut siv);
+    input_step(&mut siv); // moving the layout code into input_step
 
     siv.run(); // starting the event loop
 
