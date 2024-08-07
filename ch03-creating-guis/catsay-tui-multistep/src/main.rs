@@ -46,11 +46,12 @@ fn input_step(siv: &mut Cursive) {
                     message: &message,
                     dead: is_dead,
                 };
-                result_steps(s, &options)
+                result_steps(s, &options) // calling function to handle the next steps
             })
     );
 }
 
+// hide the form and show the cat dialog when ok is clicked
 fn result_steps(siv: &mut Cursive, options: &CatsayOptions) {
 
     let eye = if options.dead { "x" } else { "o" };
@@ -66,6 +67,8 @@ fn result_steps(siv: &mut Cursive, options: &CatsayOptions) {
         eye = eye
     );  
     
+    // hiding form from input_step by calling pop_layer
+    // pops the existing layer from the layers stack
     siv.pop_layer();
     siv.add_layer(
         Dialog::text(cat_text)
