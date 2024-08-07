@@ -6,42 +6,80 @@
 /// a very thin wrapper around the ncurses TUI lib
 /// NOTE: The ncurses lib is terribly unsafe
 
-use cursive::views::{ Dialog, TextView };
-use cursive::event::Key;
+use cursive::traits::Nameable;
+use cursive::views::{ Checkbox, Dialog, EditView, ListView };
+use cursive::Cursive;
+
+// warp all form field values in one struct
+// so we can pass them around easily
+struct CatsayOptions<'a> {
+    message: &'a str,
+    dead: bool
+}
+
+fn input_step(siv: &mut Cursive) {
+    siv.add_layer(
+        Dialog::new()
+            .title("Please fill out the form for the cat")
+            .content(
+                ListView::new()
+                .child(
+                    "Message:", 
+                    EditView::new().with_name("message")
+                )
+                .child(
+                    "Dead?:", 
+                    EditView::new().with_name("dead")
+                )
+            )
+            .button("OK", |s| {
+                let message = s.call_on_name(
+                    "message", 
+                    |t: &mut EditView| t.get_content()
+                ).unwrap();
+                let is_dead: bool = s.call_on_name(
+                    "dead", 
+                    |t: &mut Checkbox| t.is_checked()
+                ).unwrap();
+                let options = CatsayOptions {
+                    message: &message,
+                    dead: is_dead,
+                };
+                result_steps(s, &options)
+            })
+    );
+}
+
+fn result_steps(siv: &mut Cursive, options: &CatsayOptions) {
+
+    let eye = if options.dead { "x" } else { "o" };
+
+    // creating a TextView to hold the ASCII-art
+    let cat_text = format!("{msg}
+ \\
+  \\
+     /\\_/\\
+( {eye} {eye} )
+    =( I )=",
+        msg = options.message,
+        eye = eye
+    );  
+    
+    siv.pop_layer();
+    siv.add_layer(
+        Dialog::text(cat_text)
+            .title("The cat says...")
+            .button("OK", |s| s.quit())
+    )
+}
 
 fn main() {
     // creating a Cursive root object
     // Cursive uses layers to create a stacked view of the components
     let mut siv = cursive::default();
-
-    // now back to our meowing cat
-    // creating a TextView to hold the ASCII-art
-    let cat_text = "Meow!
- \\
-  \\
-     /\\_/\\
-    ( o o )
-    =( I )=
-    ";  
     
-    // declaring the app layout
-    // adding the TextView as a layer to the main siv program
-    siv.add_layer(TextView::new(cat_text));
-
-    /* // wrapping the TextView with a Dialog
-    siv.add_layer(Dialog::around(
-        TextView::new(cat_text)
-        ).button("OK", |s| s.quit() // adding button with callback to Dialog
-    )); */
-
-    // short hand version of above code
-    siv.add_layer(Dialog::text(cat_text).button("OK", |s| s.quit()));
-
-    // listen to key events -> press Key::Esc and then quit
-    // setting up non-blocking global callback
-    // arguments: key event and closure
-    // closure takes mutable reference to Cursive as argument 
-    siv.add_global_callback(Key::Esc, |s| s.quit());
+    // calling input_step
+    input_step(&mut siv);
 
     siv.run(); // starting the event loop
 
