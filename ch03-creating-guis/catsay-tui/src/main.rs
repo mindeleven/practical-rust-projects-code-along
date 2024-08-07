@@ -28,11 +28,14 @@ fn main() {
     // adding the TextView as a layer to the main siv program
     siv.add_layer(TextView::new(cat_text));
 
-    // wrapping the TextView with a Dialog
+    /* // wrapping the TextView with a Dialog
     siv.add_layer(Dialog::around(
         TextView::new(cat_text)
         ).button("OK", |s| s.quit() // adding button with callback to Dialog
-    ));
+    )); */
+
+    // short hand version of above code
+    siv.add_layer(Dialog::text(cat_text).button("OK", |s| s.quit()));
 
     // listen to key events -> press Key::Esc and then quit
     // setting up non-blocking global callback
