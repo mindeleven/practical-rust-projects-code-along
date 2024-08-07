@@ -7,6 +7,7 @@
 /// NOTE: The ncurses lib is terribly unsafe
 
 use cursive::views::TextView;
+use cursive::event::Key;
 
 fn main() {
     // creating a Cursive root object
@@ -26,6 +27,12 @@ fn main() {
     // declaring the app layout
     // adding the TextView as a layer to the main siv program
     siv.add_layer(TextView::new(cat_text));
+
+    // listen to key events -> press Key::Esc and then quit
+    // setting up non-blocking global callback
+    // arguments: key event and closure
+    // closure takes mutable reference to Cursive as argument 
+    siv.add_global_callback(Key::Esc, |s| s.quit());
 
     siv.run(); // starting the event loop
 
