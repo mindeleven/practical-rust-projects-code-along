@@ -6,7 +6,7 @@
 /// a very thin wrapper around the ncurses TUI lib
 /// NOTE: The ncurses lib is terribly unsafe
 
-use cursive::views::TextView;
+use cursive::views::{ Dialog, TextView };
 use cursive::event::Key;
 
 fn main() {
@@ -27,6 +27,12 @@ fn main() {
     // declaring the app layout
     // adding the TextView as a layer to the main siv program
     siv.add_layer(TextView::new(cat_text));
+
+    // wrapping the TextView with a Dialog
+    siv.add_layer(Dialog::around(
+        TextView::new(cat_text)
+        ).button("OK", |s| s.quit() // adding button with callback to Dialog
+    ));
 
     // listen to key events -> press Key::Esc and then quit
     // setting up non-blocking global callback
