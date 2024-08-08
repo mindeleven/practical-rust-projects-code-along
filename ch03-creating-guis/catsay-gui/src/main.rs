@@ -8,6 +8,9 @@ use gtk::{
     Orientation
 };
 
+// start gtk window with debugger
+// GTK_DEBUG=interactive cargo run
+
 fn main() {
     
     let app = Application::new(
